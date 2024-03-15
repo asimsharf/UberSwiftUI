@@ -8,7 +8,12 @@
 import SwiftUI
 
 struct RideRequestView: View {
+    
+    @State private var selectedRideType: RideType = .uberX
+    @EnvironmentObject var locationViewModel: LocationSearchViewModel
+    
     var body: some View {
+        
         VStack(content: {
             Capsule()
                 .foregroundColor(Color(.systemGray5))
@@ -50,9 +55,11 @@ struct RideRequestView: View {
                     .padding(.bottom, 10)
                     
                     HStack(content: {
-                        Text("Starbucks Coffee")
-                            .font(.system(size: 16, weight: .semibold))
-                        
+                        if let location = locationViewModel.selectedUberLocation {
+                            Text(location.title)
+                                .font(.system(size: 16, weight: .semibold))
+                        }
+
                         Spacer()
                         
                         Text("1:45 PM")
@@ -87,11 +94,10 @@ struct RideRequestView: View {
                             VStack(spacing: 4, content: {
                                 Text(type.description)
                                     .font(.system(size: 14, weight: .semibold))
-                                    .foregroundColor(.gray)
                                 
-                                Text("$22.04")
+                                Text(locationViewModel.computeRidePrice(forType: type).toCurrency())
                                     .font(.system(size: 14, weight: .semibold))
-                                    .foregroundColor(.gray)
+                
                             })
                             .padding(8)
                             
@@ -99,14 +105,13 @@ struct RideRequestView: View {
                         .frame(width: 112, height: 140)
                         .foregroundColor(type == selectedRideType ? .white : .black)
                         .background(Color(type == selectedRideType ? .systemBlue : .systemGroupedBackground))
-                        .scaleEffect(type = selectedRideType ? 1.2 : 1.0)
+                        .scaleEffect(type == selectedRideType ? 1.25 : 1.0)
                         .cornerRadius(10)
                         .onTapGesture {
                             withAnimation (.spring()) {
                                 selectedRideType = type
                             }
                         }
-                        
                     }
                 })
             }
@@ -158,6 +163,7 @@ struct RideRequestView: View {
         .padding(.bottom, 24)
         .background(.white)
         .cornerRadius(12)
+        
     }
 }
 
